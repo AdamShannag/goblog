@@ -1,6 +1,6 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
-import {environment} from "../environments/environment";
+import {PrimeNGConfig} from "primeng/api";
 
 @Component({
   selector: 'app-root',
@@ -9,6 +9,13 @@ import {environment} from "../environments/environment";
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent {
-  title = environment.name;
+export class AppComponent implements OnInit {
+
+  constructor(private primengConfig: PrimeNGConfig) {
+  }
+
+  ngOnInit() {
+    this.primengConfig.ripple = true;
+  }
+
 }

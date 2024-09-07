@@ -1,11 +1,11 @@
 <ng-container>
-  @if (root && item.visible){
+  @if (root && item.visible !== false){
     <div class="layout-menuitem-root-text" translate>
       {{ item.label }}
     </div>
   }
 
-  @if((!item.routerLink || item.items) && item.visible){
+  @if((!item.routerLink || item.items) && item.visible !== false){
     <a [attr.href]="item.url" (click)="itemClick($event)" [ngClass]="item.class" [attr.target]="item.target" tabindex="0"
        pRipple>
       <i [ngClass]="item.icon" class="layout-menuitem-icon"></i>
@@ -16,7 +16,7 @@
     </a>
   }
 
-  @if(item.routerLink && !item.items && item.visible){
+  @if(item.routerLink && !item.items && item.visible !== false){
     <a (click)="itemClick($event)" [ngClass]="item.class" [routerLink]="item.routerLink" routerLinkActive="active-route"
        [routerLinkActiveOptions]="
             item.routerLinkActiveOptions || {

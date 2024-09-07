@@ -1,0 +1,30 @@
+<p-toolbar>
+  <div class="p-toolbar-group-start">
+    <p-button icon="pi pi-arrow-left" (onClick)="goBack()"/>
+  </div>
+  <div class="p-toolbar-group-center">
+    <p-toggleButton
+      [(ngModel)]="editor"
+      (onChange)="enableEditor($event)"
+      offIcon="pi pi-info-circle" onIcon="pi pi-pen-to-square"
+      offLabel="Details"
+      onLabel="Editor"></p-toggleButton>
+  </div>
+  <div class="p-toolbar-group-end">
+    <p-splitButton label="Save" icon="pi pi-check" [model]="items"/>
+  </div>
+</p-toolbar>
+
+<div class="my-5"></div>
+
+<div [ngClass]="{'hidden':!editor}">
+  <app-editor></app-editor>
+</div>
+
+<div [ngClass]="{'hidden':editor}">
+  from goes here
+</div>
+
+
+
+

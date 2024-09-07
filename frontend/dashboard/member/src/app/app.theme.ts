@@ -10,6 +10,7 @@ export const appThemeInit = (localStorageService: LocalStorageService, themeServ
       resolve();
       return;
     }
+    resolve();
   });
 }
 

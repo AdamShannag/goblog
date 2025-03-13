@@ -1,0 +1,17 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: kiali-auth-policy
+  namespace: istio-system
+spec:
+  action: CUSTOM
+  provider:
+    name: "oauth2-proxy"
+  rules:
+    - to:
+        - operation:
+            hosts: [ "kiali.adam-dev.info" ]
+            notPaths: ["/oauth2/*"]
+  selector:
+    matchLabels:
+      app: istio-ingressgateway

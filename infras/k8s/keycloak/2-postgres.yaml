@@ -1,0 +1,73 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: keycloak-db-cluster
+  namespace: security-db
+spec:
+  description: "Keycloak DB Cluster"
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.2
+  instances: 3
+  startDelay: 300
+  stopDelay: 300
+  primaryUpdateStrategy: unsupervised
+
+  postgresql:
+    parameters:
+      shared_buffers: 256MB
+      pg_stat_statements.max: '10000'
+      pg_stat_statements.track: all
+      auto_explain.log_min_duration: '10s'
+
+  bootstrap:
+    initdb:
+      database: keycloak
+      owner: keycloak
+      secret:
+        name: keycloak-user
+      postInitSQL:
+        - GRANT ALL ON SCHEMA public TO keycloak;
+
+  #  enableSuperuserAccess: true
+  #  superuserSecret:
+  #    name: cluster-example-superuser
+
+  storage:
+    size: 1Gi
+
+  #  backup:
+  #    barmanObjectStore:
+  #      destinationPath: s3://cluster-example-full-backup/
+  #      endpointURL: http://custom-endpoint:1234
+  #      s3Credentials:
+  #        accessKeyId:
+  #          name: backup-creds
+  #          key: ACCESS_KEY_ID
+  #        secretAccessKey:
+  #          name: backup-creds
+  #          key: ACCESS_SECRET_KEY
+  #      wal:
+  #        compression: gzip
+  #        encryption: AES256
+  #      data:
+  #        compression: gzip
+  #        encryption: AES256
+  #        immediateCheckpoint: false
+  #        jobs: 2
+  #    retentionPolicy: "30d"
+
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "1"
+    limits:
+      memory: "1Gi"
+      cpu: "2"
+
+  affinity:
+    enablePodAntiAffinity: true
+    topologyKey: failure-domain.beta.kubernetes.io/zone
+
+  enablePDB: true
+
+  monitoring:
+    enablePodMonitor: true

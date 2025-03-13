@@ -1,0 +1,14 @@
+kind: VirtualService
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: oauth2proxy
+  namespace: oauth2-proxy
+spec:
+  hosts:
+    - "oauth2proxy.adam-dev.info"
+  gateways:
+    - istio-system/global-gateway
+  http:
+    - route:
+        - destination:
+            host: app-oauth2-proxy

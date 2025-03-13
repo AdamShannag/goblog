@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: member-dashboard
+spec:
+  selector:
+    matchLabels:
+      app: member-dashboard
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: member-dashboard
+    spec:
+      containers:
+        - name: member-dashboard
+          image: adamiscool/frontend-test:v1.0.1
+          env:
+          imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: member-dashboard
+spec:
+  selector:
+    app: member-dashboard
+  ports:
+    - name: http
+      port: 80
+  type: ClusterIP
+---

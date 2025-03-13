@@ -1,0 +1,66 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: oauth2-proxy
+  namespace: oauth2-proxy
+spec:
+  selector:
+    matchLabels:
+      app: oauth2-proxy
+  template:
+    metadata:
+      labels:
+        app: oauth2-proxy
+    spec:
+      containers:
+        - name: oauth2-proxy
+          image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0
+          args:
+            - --provider=oidc
+            - --user-id-claim=sub
+            - --provider-display-name=ZITADEL
+            - --oidc-issuer-url=https://auth.adam-dev.info
+            - --email-domain=*
+            - --pass-access-token=true
+            - --skip-provider-button=false
+            - --cookie-secure=true
+            - --reverse-proxy=true
+            - --whitelist-domain=.adam-dev.info
+            - --pass-host-header=true
+            - --auth-logging=true
+            - --cookie-httponly=false
+            - --cookie-refresh=4m
+            - --pass-authorization-header=true
+            - --request-logging=true
+            - --session-store-type=cookie
+            - --set-authorization-header=true
+            - --set-xauthrequest=true
+            - --silence-ping-logging=false
+            - --skip-auth-strip-headers=false
+            - --skip-jwt-bearer-tokens=false
+            - --ssl-insecure-skip-verify=false
+            - --standard-logging=true
+            - --upstream=static://200
+            - --code-challenge-method=S256
+          env:
+            - name: OAUTH2_PROXY_CLIENT_ID
+              value: "284209770209018065"
+            - name: OAUTH2_PROXY_CLIENT_SECRET
+              value: "xxxxx"
+            - name: OAUTH2_PROXY_COOKIE_SECRET
+              value: "k9piaRuGASOk5q8mJTThGx4JEmmbwZj1uD5GRXZlxwg"
+          ports:
+            - containerPort: 4180
+              protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-oauth2-proxy
+  namespace: oauth2-proxy
+spec:
+  selector:
+    app: oauth2-proxy
+  ports:
+    - name: http
+      port: 80

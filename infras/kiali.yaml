@@ -1,0 +1,29 @@
+apiVersion: kiali.io/v1alpha1
+kind: Kiali
+metadata:
+  annotations:
+    ansible.sdk.operatorframework.io/verbosity: "1"
+    meta.helm.sh/release-name: kiali-operator
+    meta.helm.sh/release-namespace: kiali-operator
+  labels:
+    app: kiali-operator
+    app.kubernetes.io/instance: kiali-operator
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kiali-operator
+    app.kubernetes.io/part-of: kiali-operator
+    app.kubernetes.io/version: v1.89.3
+    helm.sh/chart: kiali-operator-1.89.3
+    version: v1.89.3
+  name: kiali
+  namespace: istio-system
+spec:
+  auth:
+    openid:
+      client_id: "284304960441614440"
+      disable_rbac: true
+#      username_claim: "sub"
+      issuer_uri: "https://auth.adam-dev.info"
+    strategy: anonymous
+  deployment:
+    accessible_namespaces:
+      - '**'

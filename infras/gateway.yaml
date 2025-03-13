@@ -1,0 +1,60 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: global-gateway
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 443
+        name: https
+        protocol: HTTPS
+      tls:
+        mode: SIMPLE
+        credentialName: adam-dev-domain-cert-prod
+      hosts:
+        - "front.adam-dev.info"
+        - "auth.adam-dev.info"
+        - "kiali.adam-dev.info"
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: kiali-vs
+  namespace: istio-system
+spec:
+  hosts:
+    - "kiali.adam-dev.info"
+  gateways:
+    - global-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /oauth2
+      route:
+        - destination:
+            host: app-oauth2-proxy.oauth2-proxy.svc.cluster.local
+            port:
+              number: 80
+    - route:
+        - destination:
+            host: kiali.istio-system.svc.cluster.local
+            port:
+              number: 20001
+---
+kind: VirtualService
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: zitadel
+  namespace: auth
+spec:
+  hosts:
+    - "auth.adam-dev.info"
+  gateways:
+    - istio-system/global-gateway
+  http:
+    - route:
+        - destination:
+            host: my-zitadel

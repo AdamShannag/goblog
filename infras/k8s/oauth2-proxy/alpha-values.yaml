@@ -1,0 +1,58 @@
+config:
+  cookieSecret: "CbgXFXDJ16laaCfChtFBpKy1trNEmJZDIjaiaIMLyRA="
+  configFile: |-
+    email_domains = [ "*" ]
+
+
+upstreamConfig:
+  upstreams:
+    - id: static_200
+      path: /
+      static: true
+      staticCode: 200
+
+injectRequestHeaders:
+  #  - name: Authorization
+  #    values:
+  #      - claim: access_token
+  #        prefix: 'Bearer '
+  #  - name: X-Forwarded-Groups
+  #    values:
+  #      - claim: groups
+  - name: X-Auth-Request-Preferred-Username
+    values:
+      - claim: preferred_username
+  - name: X-Auth-Request-Email
+    values:
+      - claim: email
+
+providers:
+  - provider: keycloak-oidc
+    clientSecret: b2F1dGgyLXByb3h5LWNsaWVudC1zZWNyZXQK
+    clientID: oauth2-proxy
+    id: keycloak-oidc
+    code_challenge_method: S256
+    scope: "openid email profile groups"
+    allowedGroups:
+      - admins
+    #    keycloakConfig:
+    #      groups:
+    #        - admins
+    oidcConfig:
+      issuerURL: https://auth.adam-dev.info/realms/oauth2-proxy
+      emailClaim: email
+      groupsClaim: groups
+      userIDClaim: email
+
+extraArgs:
+  cookie-secure: "true"
+  cookie-domain: ".adam-dev.info"    # Replace with your base domain
+  cookie-samesite: lax
+  cookie-expire: 12h               # How long our Cookie is valid
+  auth-logging: true               # Enable / Disable auth logs
+  request-logging: true            # Enable / Disable request logs
+  standard-logging: true           # Enable / Disable the standart logs
+  show-debug-on-error: true        # Disable in production setups
+  skip-provider-button: false       # We only have one provider configured (Keycloak)
+  silence-ping-logging: true       # Keeps our logs clean
+  whitelist-domain: ".adam-dev.info" # Replace with your base domain

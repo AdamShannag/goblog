@@ -1,0 +1,36 @@
+config:
+  clientID: "284209770209018065"
+  clientSecret: "xxxxx"
+  cookieSecret: "k9piaRuGASOk5q8mJTThGx4JEmmbwZj1uD5GRXZlxwg="
+  configFile: |-
+    provider = "keycloak-oidc"
+    scope: "openid email profile groups"
+    email_claim: email
+    groups_claim: groups 
+    user_id_claim = email
+    provider_display_name = "Keycloak"
+    oidc_issuer_url = "https://auth.adam-dev.info/realms/istio"
+    allowed_group = admin
+    email_domains = ["*"]
+    pass_access_token = true
+    skip_provider_button = true
+    cookie_secure = true
+    reverse_proxy = true
+    whitelist_domains = ".adam-dev.info"
+    pass_host_header = true
+    auth_logging = true
+    cookie_httponly = true
+    cookie_refresh = "4m"
+    pass_authorization_header = true
+    request_logging = true
+    session_store_type = "redis"
+    set_authorization_header = true
+    set_xauthrequest = true
+    silence_ping_logging = true
+    skip_auth_strip_headers = false
+    skip_jwt_bearer_tokens = true
+    ssl_insecure_skip_verify = true
+    standard_logging = true
+    upstreams = [ "static://200" ]
+    code_challenge_method = "S256"
+    redis_connection_url="redis://redis-service:6379"

@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: confirmation-service
+spec:
+  selector:
+    matchLabels:
+      app: confirmation-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: confirmation-service
+    spec:
+      containers:
+        - image: adamiscool/test-confirmation:v0.0.1
+          name: confirmation-service
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9000
+              protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: confirmation-service
+spec:
+  selector:
+    app: confirmation-service
+  ports:
+    - name: grpc
+      port: 9000
+      appProtocol: grpc
+      targetPort: 9000
+  type: ClusterIP
+---

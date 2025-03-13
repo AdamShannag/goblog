@@ -1,0 +1,19 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: example-auth-policy
+  namespace: istio-system
+spec:
+  selector:
+    matchLabels:
+      istio: ingress-gateway # adapt to your needs
+  action: CUSTOM
+  provider:
+    name: oauth2-proxy
+  rules:
+    - to:
+        - operation:
+            hosts:
+              - echo.adam-dev.info
+              # - another.test.com
+              # List here all your endpoints where you wish to enable auth

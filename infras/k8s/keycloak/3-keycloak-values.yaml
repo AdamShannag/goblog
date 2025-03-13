@@ -1,0 +1,50 @@
+global:
+  storageClass: "standard"
+
+auth:
+  adminUser: "admin"
+  existingSecret: "keycloak-admin-password"
+  passwordSecretKey: "password"
+production: true
+proxy: edge
+externalDatabase:
+  host: "keycloak-db-cluster-rw.security-db.svc.cluster.local"
+  port: 5432
+  user: "keycloak"
+  password: null
+  existingSecret: "keycloak-user"
+  existingSecretPasswordKey: "password"
+  database: "postgres"
+persistence:
+  enabled: true
+  size: "8Gi"
+
+postgresql:
+  enabled: false
+
+initContainers:
+  - name: theme-provider
+    image: adamiscool/keycloak-theme:latest
+    imagePullPolicy: IfNotPresent
+    command:
+      - sh
+    args:
+      - -c
+      - |
+        echo "Copying theme..."
+        cp -R /my_theme/* /theme
+    volumeMounts:
+      - name: theme
+        mountPath: /theme
+
+extraVolumeMounts:
+  - name: theme
+    mountPath: /opt/bitnami/keycloak/providers/keywind.jar
+    subPath: keywind.jar
+
+extraVolumes:
+  - name: theme
+    emptyDir: { }
+extraEnvVars:
+  - name: KEYCLOAK_PROXY_HEADERS
+    value: "xforwarded"

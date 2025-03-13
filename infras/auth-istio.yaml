@@ -1,0 +1,32 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: zitadel-ingress
+  namespace: zitadel
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - hosts:
+        - auth.adam-dev.info
+      port:
+        name: http
+        number: 80
+        protocol: HTTP
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: zitadel-ingress
+  namespace: zitadel
+spec:
+  gateways:
+    - zitadel-ingress
+  hosts:
+    - auth.adam-dev.info
+  http:
+    - route:
+        - destination:
+            host: zitadel.zitadel.svc.cluster.local
+            port:
+              number: 80

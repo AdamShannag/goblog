@@ -1,0 +1,30 @@
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+spec:
+  meshConfig:
+    extensionProviders:
+      - name: oauth2-proxy
+        envoyExtAuthzHttp:
+          service: app-oauth2-proxy.oauth2-proxy.svc.cluster.local
+          port: 80
+          headersToUpstreamOnAllow:
+            - path
+            - authorization
+            - cookie
+            - x-auth-request-email
+            - x-auth-request-preferred-username
+            - x-auth-request-access-token
+            - x-forwarded-access-token
+          headersToDownstreamOnDeny:
+            - content-type
+            - set-cookie
+          includeRequestHeadersInCheck:
+            - authorization
+            - cookie
+            - x-auth-request-groups
+          includeHeadersInCheck:
+            - "cookie"
+            - "x-forwarded-access-token"
+          includeAdditionalHeadersInCheck: # Optional for oauth2-proxy to enforce https
+            authorization: '%REQ(x-auth-request-access-token)%'
+            X-Auth-Request-Redirect: 'https://%REQ(:authority)%%REQ(:path)%'

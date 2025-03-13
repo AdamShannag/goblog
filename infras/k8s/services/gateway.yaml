@@ -1,0 +1,91 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gateway-config
+data:
+  config.yaml: |
+    global:
+      env: prod
+    
+    server:
+      http:
+        port: "8000"
+        request_timeout: 30s
+        idle_timeout: 30s
+        read_timeout: 30s
+        read_header_timeout: 30s
+        write_timeout: 30s
+    
+    log:
+      exclude_fields: [ "proto","bytes_in","bytes_out","type","git_revision","go_version","remote_ip","user_agent","pid" ]
+      level: -1
+      sampling:
+        enabled: true
+        info:
+          burst: 3
+          period: 1s
+        warn:
+          burst: 3
+          period: 1s
+        error:
+          burst: 3
+          period: 1s
+  gateway.yaml: |
+    services:
+      order:
+        endpoint: order-service:9000
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: policy-file
+data:
+  new_structure_allow_policy.json: |
+    {"allow_rules":{"rule1":{"paths":["/api.orders.v1.OrdersService/AddOrder"],"roles":{"all":{"Group1":{"equals":["Manager"]}}}},"rule2":{"paths":["/api.orders.v1.OrdersService/AddOrder"],"roles":{"any":{"Group1":{"equals":["Project Administrator"]},"Group2":{"equals":["role-4","role-5"]}}},"headers":{}}}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+spec:
+  selector:
+    matchLabels:
+      app: gateway
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+        - name: gateway
+          image: adamiscool/test-gateway:v0.0.20
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config
+              readOnly: true
+            - name: policy-volume
+              mountPath: /etc/policy
+              readOnly: true
+      volumes:
+        - name: config-volume
+          configMap:
+            name: gateway-config
+        - name: policy-volume
+          configMap:
+            name: policy-file
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+spec:
+  selector:
+    app: gateway
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+  type: ClusterIP
+---
